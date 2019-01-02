@@ -26,7 +26,7 @@
 
 ### Prerequisites
 
-[봇 앱](https://play.google.com/store/apps/details?id=be.zvz.newskbot)을 아무거나 설치해 주세요. (다른 봇 앱도 대부분 사용할 수 있습니다.)
+봇 앱을 아무거나 설치해 주세요. (파일 경로가 [이 앱](https://play.google.com/store/apps/details?id=be.zvz.newskbot)을 기준으로 만들어졌습니다.)
 
 [Wear OS by Google](https://play.google.com/store/apps/details?id=com.google.android.wearable.app)을 설치해 주세요. (설치가 되어 있어야 봇이 작동합니다.)
 
@@ -38,7 +38,7 @@
 
 `response.js`를 복사하고 `members.txt`와 `rooms.txt` 파일을 적절히 작성해 주세요.
 
-`members.txt`와 `rooms.txt` 파일은 `response.js`와 **같은 폴더에** 있어야 합니다.
+`members.txt`와 `rooms.txt` 파일은 `(내부 저장소 경로)/kbot` 폴더에 있어야 합니다.
 
 
 
