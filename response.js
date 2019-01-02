@@ -101,7 +101,7 @@ function readMemberInfo()
 		{
 			Log.w("그룹 " + tmp + "이(가) 이미 있습니다. 덮어씁니다.");
 		}
-		const group = tmp;
+		let group = tmp;
 		ret[group] = [];
 		while((tmp = br.readLine()) != null && (tmp = tmp.trim()) != "")
 		{
