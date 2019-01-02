@@ -131,7 +131,7 @@
 ```C
 if(cond)
 {
-    something();
+	something();
 }
 ```
 
@@ -152,4 +152,3 @@ if(cond)
 ## Acknowledgments
 
 - 대충 만들었지만, 잘 사용해 주셔서 감사합니다 (_ _)...
-
