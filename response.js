@@ -27,7 +27,7 @@ function memberClock(member_list, session)
 			{
 				if(m == member_list[j][3])
 				{
-				tmp.push(member_list[j][0]);
+					tmp.push(member_list[j][0]);
 				}
 				else break;
 			}
@@ -148,7 +148,7 @@ function readRoomInfo(memberInfo)
 	let members = readMemberInfo();
 	const room = readRoomInfo(members);
 
-	for(var i in members.length)
+	for(var i in members)
 	{
 		if(!members.hasOwnProperty(i)) continue;
 		for(let j = 0; j < members[i].length; j++)
