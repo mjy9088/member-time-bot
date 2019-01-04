@@ -73,7 +73,19 @@ function getMessage1(names, h, m, remains)
 
 function getMessageN(members)
 {
-	return "아직 완성되지 않은 기능입니다!";
+	let ret = "";
+	for(let i = 0; i < members.length; i++)
+	{
+		if(i) ret += ", ";
+		ret += members[i][0][0] + "시(" + members[i][1] + "시 " + members[i][2] + "분)까지 약 ";
+		let s = remains % 60;
+		let m = (remains = Math.floor(remains / 60)) % 60;
+		let h = Math.floor(remains / 60);
+		if(h) ret += h + "시간 ";
+		if(m) ret += m + "분 ";
+		ret += s + "초";
+	}
+	return ret + " 남았습니다."
 }
 
 function memberClock(members)
