@@ -81,7 +81,8 @@ function memberClock(members)
 	const now = new Date();
 	let n = ((now.getHours() + 11) % 12 + 1) * 60 + now.getMinutes();
 	let idx = find_earliest(members, n);
-	let tmp = [members[idx][0][0]], temp = members[idx];
+	let temp = members[idx];
+	let tmp = [temp[0][0]];
 	while(members[++idx] && members[idx][3] == temp[3])
 	{
 		tmp.push(members[idx][0][0]);
