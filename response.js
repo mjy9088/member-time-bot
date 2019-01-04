@@ -44,7 +44,7 @@ function bmc_add(room, prefix, members, func)
 function time_remain(time, sec)
 {
 	let ret = time * 60 - sec;
-	return ret < 0 ? ret + 43200;
+	return ret < 0 ? ret + 43200 : ret;
 }
 
 function find_earliest(members, min)
