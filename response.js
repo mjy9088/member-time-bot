@@ -68,6 +68,7 @@ function getMessage1(names, h, m, remains)
 	if(h) ret += h + "시간 ";
 	if(m) ret += m + "분 ";
 	ret += s + "초 남았습니다.";
+	return ret;
 }
 
 function getMessageN(members)
