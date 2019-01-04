@@ -51,7 +51,7 @@ function find_earliest(members, min)
 	const len = members.length;
 	for(let i = 0; i < len; i++)
 	{
-		if(members[i][3] < min)
+		if(members[i][3] > min)
 		{
 			return i;
 		}
