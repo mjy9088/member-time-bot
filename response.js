@@ -5,87 +5,119 @@
  * https://gitlab.com/mjy-hobby/kakaotalk-bot/standalone/member-clock
  */
 
-let bmc_rooms = {};
+let bmc_commands = {};
 
-function bmc_register(room, scr)
-{
-	if(!bmc_rooms[room]) bmc_rooms[room] = [];
-	bmc_rooms[room].push(scr);
-}
-
-function memberClock(member_list, session)
-{
-	const now = new Date();
-	let n = ((now.getHours() + 11) % 12 + 1) * 60 + now.getMinutes();
-	for(let i = 0; i <= member_list.length; i++)
-	{
-		let m = member_list[i % member_list.length][3];
-		if(i == member_list.length || n < m)
-		{
-			let tmp = [member_list[i % member_list.length][0]];
-			for(let j = (i % member_list.length) + 1; j < member_list.length; j++)
-			{
-				if(m == member_list[j][3])
-				{
-					tmp.push(member_list[j][0]);
-				}
-				else break;
-			}
-			m -= n;
-			if(i == member_list.length) m += 720;
-			if(now.getSeconds() != 0)
-			{
-				m -= 1;
-			}
-			i %= member_list.length;
-			session.reply(tmp.join("시, ") + "시(" + member_list[i][1] + "시 " + member_list[i][2] + "분)까지 약 " +
-				(m > 60 ? (Math.floor(m / 60) + "시간 " + (m % 60)) : m) + "분 " + ((60 - now.getSeconds()) % 60) + "초 남았습니다.");
-			return true;
-		}
-	}
-}
-
-function list_members(member_list, session)
+function list_members(member_list)
 {
 	let ret = "";
 	for(let i = 0; i < member_list.length; i++)
 	{
 		if(i) ret += "\n";
-		ret += member_list[i][0] + "시는 " + member_list[i][1] + "시 " + member_list[i][2] + "분입니다.";
+		ret += member_list[i][0][0] + "시는 " + member_list[i][1] + "시 " + member_list[i][2] + "분입니다.";
 	}
 	session.reply(ret);
 	return true;
 }
 
-function getFunction(prefix, member_list)
+function bmc_add(room, prefix, members, func)
 {
-	return function (msg, session)
+	if(!bmc_commands[room])
 	{
-		let tmp = msg.trim().split(" ");
-		if(tmp[0] == prefix + "멤버시")
+		bmc_commands[room] = {};
+	}
+	bmc_commands[room][prefix + "정보"] = "독립형 멤버시 봇입니다.\n자세한 정보는 https://gitlab.com/mjy-hobby/kakaotalk-bot/standalone/member-clock 에서 확인하실 수 있습니다.";
+	for(let i = 0; i < members.length; i++)
+	{
+		for(let j = 0; i < members[i][0].length; j++)
 		{
-			if(tmp.length >= 2 && tmp[1] == "목록") return list_members(member_list, session);
-			return memberClock(member_list, session);
+			if(!bmc_commands[room][prefix + members[i][0][j] + "시"])
+			{
+				bmc_commands[room][prefix + members[i][0][j] + "시"] = [];
+			}
+			bmc_commands[room][prefix + members[i][0][j] + "시"].push(members[i]);
 		}
-		if(tmp[0] == prefix + "정보")
+	}
+	bmc_commands[room][prefix + "멤버시"] = func;
+	bmc_commands[room][prefix + "멤버시 목록"] = list_members(members);
+}
+
+function time_remain(time, sec)
+{
+	let ret = time * 60 - sec;
+	return ret < 0 ? ret + 43200;
+}
+
+function find_earliest(members, min)
+{
+	const len = members.length;
+	for(let i = 0; i < len; i++)
+	{
+		if(members[i][3] < min)
 		{
-			session.reply("독립형 멤버시 봇입니다.\n자세한 정보는 https://gitlab.com/mjy-hobby/kakaotalk-bot/standalone/member-clock 에서 확인하실 수 있습니다.");
-			return true;
+			return i;
 		}
+	}
+	return 0;
+}
+
+function getMessage1(names, h, m, remains)
+{
+	let ret =  names.join("시, ") + "시(" + h + "시 " + m + "분)까지 약 ";
+	let s = remains % 60;
+	let m = (remains = Math.floor(remains / 60)) % 60;
+	let h = Math.floor(remains / 60);
+	if(h) ret += h + "시간 ";
+	if(m) ret += m + "분 ";
+	ret += s + "초 남았습니다.";
+}
+
+function getMessageN(members)
+{
+	return "아직 완성되지 않은 기능입니다!";
+}
+
+function memberClock(members)
+{
+	const now = new Date();
+	let n = ((now.getHours() + 11) % 12 + 1) * 60 + now.getMinutes();
+	let idx = find_earliest(members, n);
+	let tmp = [members[idx][0][0]], temp = members[idx];
+	while(members[++idx] && members[idx][3] == temp[3])
+	{
+		tmp.push(members[idx][0][0]);
+	}
+	return getMessage1(tmp, temp[1], temp[2], time_remain(temp[3], n * 60 + now.getSeconds()));
+}
+
+function getFunction(members)
+{
+	return function ()
+	{
+		return memberClock(members);
 	};
 }
 
 function response(room, msg, sender, isGroupChat, replier, imageDB)
 {
 	room = room.trim();
+	msg = msg.trim();
 	if(bmc_rooms[room])
 	{
-		for(var i = 0; i < bmc_rooms[room].length; i++)
+		switch(typeof bmc_rooms[room][msg])
 		{
-			if(bmc_rooms[room][i](msg, replier))
-			{
+			case "undefined":
 				return;
-			}
+			case "string":
+				replier.reply(bmc_rooms[room][msg]);
+				break;
+			case "function":
+				replier.reply(bmc_rooms[room][msg]());
+				break;
+			case "object":
+				let now = new Date();
+				let n = (((now.getHours() + 11) % 12 + 1) * 60 + now.getMinutes()) * 60 + now.getSeconds();
+				replier.reply(getMessageN(bmc_rooms[room][msg]));
+				break;
 		}
 	}
 }
@@ -105,14 +137,20 @@ function readMemberInfo()
 		ret[group] = [];
 		while((tmp = br.readLine()) != null && (tmp = tmp.trim()) != "")
 		{
-			tmp = tmp.split("/");
-			tmp = [tmp[0], parseInt(tmp[1]), parseInt(tmp[2])];
-			if(isNaN(tmp[1]) || isNaN(tmp[2]) || tmp[1] < 1 || tmp[1] > 12 || tmp[2] < 0 || tmp[2] > 59)
+			if((tmp = tmp.split("/")).length < 3)
 			{
 				Log.e("멤버 " + tmp[0] + "의 데이터가 잘못되었습니다.");
 				continue;
 			}
-			ret[group].push(tmp);
+			var temp = tmp.splice(1, 2);
+			temp = [tmp, parseInt(temp[0]), parseInt(temp[1])];
+			if(isNaN(temp[1]) || isNaN(temp[2]) || temp[1] < 1 || temp[1] > 12 || temp[2] < 0 || temp[2] > 59)
+			{
+				Log.e("멤버 " + temp[0] + "의 데이터가 잘못되었습니다.");
+				continue;
+			}
+			temp.push(temp[1] * 60 + temp[2]);
+			ret[group].push(temp);
 		}
 	}
 	br.close();
@@ -148,15 +186,6 @@ function readRoomInfo(memberInfo)
 	let members = readMemberInfo();
 	const room = readRoomInfo(members);
 
-	for(var i in members)
-	{
-		if(!members.hasOwnProperty(i)) continue;
-		for(let j = 0; j < members[i].length; j++)
-		{
-			members[i][j].push(members[i][j][1] * 60 + members[i][j][2]);
-		}
-	}
-
 	let tmp = {};
 
 	for(let i = 0; i < room.length; i++)
@@ -171,7 +200,8 @@ function readRoomInfo(memberInfo)
 				temp = temp.concat(members[room[i][2][j]]);
 			}
 			tmp[key] = temp.sort((a, b) => a[3] - b[3]);
+			tmp[key] = [tmp[key], getFunction(tmp[key])];
 		}
-		bmc_register(room[i][0], getFunction(room[i][1], tmp[key]));
+		bmc_add(room[i][0], room[i][1], tmp[key][0], tmp[key][1]);
 	}
 })();
