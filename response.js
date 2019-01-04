@@ -28,7 +28,7 @@ function bmc_add(room, prefix, members, func)
 	bmc_commands[room][prefix + "정보"] = "독립형 멤버시 봇입니다.\n자세한 정보는 https://gitlab.com/mjy-hobby/kakaotalk-bot/standalone/member-clock 에서 확인하실 수 있습니다.";
 	for(let i = 0; i < members.length; i++)
 	{
-		for(let j = 0; i < members[i][0].length; j++)
+		for(let j = 0; j < members[i][0].length; j++)
 		{
 			if(!bmc_commands[room][prefix + members[i][0][j] + "시"])
 			{
