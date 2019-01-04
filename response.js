@@ -100,22 +100,22 @@ function response(room, msg, sender, isGroupChat, replier, imageDB)
 {
 	room = room.trim();
 	msg = msg.trim();
-	if(bmc_rooms[room])
+	if(bmc_commands[room])
 	{
-		switch(typeof bmc_rooms[room][msg])
+		switch(typeof bmc_commands[room][msg])
 		{
 			case "undefined":
 				return;
 			case "string":
-				replier.reply(bmc_rooms[room][msg]);
+				replier.reply(bmc_commands[room][msg]);
 				break;
 			case "function":
-				replier.reply(bmc_rooms[room][msg]());
+				replier.reply(bmc_commands[room][msg]());
 				break;
 			case "object":
 				let now = new Date();
 				let n = (((now.getHours() + 11) % 12 + 1) * 60 + now.getMinutes()) * 60 + now.getSeconds();
-				replier.reply(getMessageN(bmc_rooms[room][msg]));
+				replier.reply(getMessageN(bmc_commands[room][msg]));
 				break;
 		}
 	}
