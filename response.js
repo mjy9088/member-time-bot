@@ -7,16 +7,15 @@
 
 let bmc_commands = {};
 
-function list_members(member_list)
+function list_members(members)
 {
 	let ret = "";
-	for(let i = 0; i < member_list.length; i++)
+	for(let i = 0; i < members.length; i++)
 	{
 		if(i) ret += "\n";
-		ret += member_list[i][0][0] + "시는 " + member_list[i][1] + "시 " + member_list[i][2] + "분입니다.";
+		ret += members[i][0][0] + "시는 " + members[i][1] + "시 " + members[i][2] + "분입니다.";
 	}
-	session.reply(ret);
-	return true;
+	return ret;
 }
 
 function bmc_add(room, prefix, members, func)
