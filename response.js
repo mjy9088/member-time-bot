@@ -61,10 +61,10 @@ function find_earliest(members, min)
 
 function getMessage1(names, h, m, remains)
 {
-	let ret =  names.join("시, ") + "시(" + h + "시 " + m + "분)까지 약 ";
+	let ret = names.join("시, ") + "시(" + h + "시 " + m + "분)까지 약 ";
 	let s = remains % 60;
-	let m = (remains = Math.floor(remains / 60)) % 60;
-	let h = Math.floor(remains / 60);
+	m = (remains = Math.floor(remains / 60)) % 60;
+	h = Math.floor(remains / 60);
 	if(h) ret += h + "시간 ";
 	if(m) ret += m + "분 ";
 	ret += s + "초 남았습니다.";
