@@ -73,11 +73,14 @@ function getMessage1(names, h, m, remains)
 
 function getMessageN(members)
 {
+	let now = new Date();
+	let n = (((now.getHours() + 11) % 12 + 1) * 60 + now.getMinutes()) * 60 + now.getSeconds();
 	let ret = "";
 	for(let i = 0; i < members.length; i++)
 	{
 		if(i) ret += ", ";
 		ret += members[i][0][0] + "시(" + members[i][1] + "시 " + members[i][2] + "분)까지 약 ";
+		let remains = time_remain(members[i][3], n);
 		let s = remains % 60;
 		let m = (remains = Math.floor(remains / 60)) % 60;
 		let h = Math.floor(remains / 60);
@@ -127,8 +130,6 @@ function response(room, msg, sender, isGroupChat, replier, imageDB)
 				replier.reply(bmc_commands[room][msg]());
 				break;
 			case "object":
-				let now = new Date();
-				let n = (((now.getHours() + 11) % 12 + 1) * 60 + now.getMinutes()) * 60 + now.getSeconds();
 				replier.reply(getMessageN(bmc_commands[room][msg]));
 				break;
 		}
