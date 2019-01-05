@@ -156,8 +156,9 @@ function readMemberInfo()
 				Log.e("멤버 " + tmp[0] + "의 데이터가 잘못되었습니다.");
 				continue;
 			}
-			var temp = tmp.splice(1, 2);
-			temp = [tmp, parseInt(temp[0]), parseInt(temp[1])];
+			var temp = tmp.slice(1, 3);
+			tmp[2] = tmp[0]; // 라이노 Array.splice 버그?
+			temp = [tmp.slice(2), parseInt(temp[0]), parseInt(temp[1])];
 			if(isNaN(temp[1]) || isNaN(temp[2]) || temp[1] < 1 || temp[1] > 12 || temp[2] < 0 || temp[2] > 59)
 			{
 				Log.e("멤버 " + temp[0] + "의 데이터가 잘못되었습니다.");
